@@ -1,0 +1,23 @@
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
+
+package(default_testonly = True)
+
+# The unit tests of the AI functions, they only depend on the public interface
+# of the sql runtime, the implementation is taken from liboceanbase.
+cc_test(
+    name = "test_ai_expr",
+    size = "small",
+    srcs = [
+        "ob_expr_ai_prompt_test.cpp",
+        "test_ob_openai_utils.cpp",
+    ],
+    linkstatic = True,
+    # Keep rules_cc's $ORIGIN rpath while linking the C++ runtime used by gtest.
+    features = ["-static_cpp_runtime", "-static_link_cpp_runtimes"],
+    linkopts = ["-lstdc++"],
+    deps = [
+        "//bazel/third_party:gtest",
+        "//src/observer:liboceanbase",
+    ],
+    target_compatible_with = ["@platforms//os:linux"],
+)
